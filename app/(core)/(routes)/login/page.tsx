@@ -1,38 +1,42 @@
-"use client"
+"use client";
 
-import { Button } from "@/app/_components/button.component"
-import { useState } from "react"
+import { Button } from "@/app/_components/button.component";
+import { useState } from "react";
 
 export default function Page() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<boolean>(false)
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const login = async () => {
-    setError(null)
-    setSuccess(false)
-    
+    setError(null);
+    setSuccess(false);
+
     try {
-      // TODO - Change to apiFetch() utility
       const res = await fetch("http://localhost:8080/login", {
         method: "POST",
         credentials: "include", // Include Cookies
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-      })
+      });
 
       if (!res.ok) {
-        const errorBody = await res.text() // try to read message
-        setError(errorBody || "Login failed.")
-        return
+        const errorBody = await res.text(); // try to read message
+        setError(errorBody || "Login failed.");
+        return;
       }
 
-      setSuccess(true)
+      const data = await res.json();
+      const token = data.token;
+      localStorage.setItem("authToken", token);
+      console.log(token);
+      
+      setSuccess(true);
     } catch (err) {
-      setError("Network error: backend unreachable")
+      setError("Network error: backend unreachable");
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto p-6">
@@ -53,7 +57,7 @@ export default function Page() {
         onChange={(e) => setPassword(e.target.value)}
         className="border p-2 rounded bg-amber-50"
       />
-      
+
       <button
         onClick={login}
         className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
@@ -64,5 +68,5 @@ export default function Page() {
       {error && <p className="text-red-500">{error}</p>}
       {success && <p className="text-green-500">Logged in!</p>}
     </div>
-  )
+  );
 }

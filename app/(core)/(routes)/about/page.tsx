@@ -1,33 +1,42 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AboutPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<string | null>(null)
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
     const fetchProtected = async () => {
       const res = await fetch("http://localhost:8080/about", {
-        credentials: "include"
-      })
+        credentials: "include",
+        // headers: {
+        // Authorization: `Bearer ${token}`,
+        //},
+      });
 
       if (res.status === 401 || res.status === 403) {
-        router.push("/login")
-        return
+        router.push("/login");
+        return;
       }
-      
-      const text = await res.text()
-      setData(text)
-      setLoading(false)
-    }
 
-    fetchProtected()
-  }, [])
+      const text = await res.text();
+      setData(text);
+      setLoading(false);
+    };
 
-  if (loading) return <p>Loading...</p>
+    fetchProtected();
+  }, []);
 
-  return <div>{data}</div>
+  if (loading) return <p>Loading...</p>;
+
+  return (
+    <div>
+      <h1 className=" text-teal-300">THIS IS THE ABOUT PAGE</h1>
+    </div>
+  );
 }
