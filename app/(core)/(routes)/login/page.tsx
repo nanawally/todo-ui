@@ -8,11 +8,11 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-
+  
   const login = async () => {
     setError(null);
     setSuccess(false);
-
+    
     try {
       const res = await fetch("http://localhost:8080/login", {
         method: "POST",
@@ -37,7 +37,7 @@ export default function Page() {
       setError("Network error: backend unreachable");
     }
   };
-
+  
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto p-6">
       <h1 className="text-xl font-bold">Login</h1>

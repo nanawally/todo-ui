@@ -6,7 +6,7 @@ export default function Home() {
     <div>
       <div className=" h-screen flex flex-col justify-center items-center text-amber-900">
         <Link href="/about">About</Link>
-        <Link href="/product">Product page</Link>
+        <Link href="/tasks">Tasks</Link>
         <Link href="/login">Login</Link>
       </div>
     </div>

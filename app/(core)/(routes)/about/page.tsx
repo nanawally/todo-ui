@@ -18,7 +18,7 @@ export default function AboutPage() {
         // Authorization: `Bearer ${token}`,
         //},
       });
-
+      
       if (res.status === 401 || res.status === 403) {
         router.push("/login");
         return;
