@@ -10,6 +10,7 @@ import {
   getTaskByPriority,
   getTaskByNoPriority,
   createTask,
+  updateTask,
 } from "@/app/_service/taskservice"
 import { TaskDTO } from "@/app/_types/TaskDTO"
 
@@ -22,7 +23,6 @@ export default function Page() {
   const [searchValue, setSearchValue] = useState("")
   const [searchMode, setSearchMode] = useState<"name" | "tag">("name")
   const [creating, setCreating] = useState(false)
-  //const [newTask, setNewTask] = useState<Partial<Task>>({})
   const [newTask, setNewTask] = useState<TaskDTO>({
     name: "",
     description: "",
@@ -30,6 +30,7 @@ export default function Page() {
     priority: "LOW",
     tags: [],
   })
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   const fetcher: Record<string, TaskFetcher> = {
     "All Tasks": getAllTasks,
@@ -40,24 +41,33 @@ export default function Page() {
         : getTaskByTag(searchValue),
     "Sort by Priority": getTaskByPriority,
     "Sort by No Priority": getTaskByNoPriority,
-    "Create New Task": async () => {
-      setCreating(true)
-      return []
-    },
   }
 
-  const handleClick = async (fetcher: TaskFetcher, label: string) => {
+  const handleClick = async (fetcher: TaskFetcher) => {
     setLoading(true)
     setError(null)
     try {
       const data = await fetcher()
       setTasks(data)
-      if (label !== "Create New Task") setCreating(false)
+      setCreating(false)
+      setEditingTask(null)
     } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task)
+    setCreating(true)
+    setNewTask({
+      name: task.name,
+      description: task.description,
+      completed: task.completed,
+      priority: task.priority,
+      tags: task.tags.map((t) => ({ tagName: t.tagName })),
+    })
   }
 
   const handleSaveTask = async () => {
@@ -70,11 +80,32 @@ export default function Page() {
     setError(null)
 
     try {
-      const saved = await createTask(newTask)
+      let saved: Task
 
-      setTasks([saved, ...(tasks ?? [])])
+      if (editingTask) {
+        const mergedTask: Task = {
+          ...editingTask,
+          ...newTask,
+          tags:
+            newTask.tags?.map((t) => ({
+              id: "", 
+              tagName: t.tagName,
+              taskType: "ACTIVE", 
+            })) ?? [],
+        }
+
+        saved = await updateTask(editingTask.id!, mergedTask)
+
+        setTasks(tasks?.map((t) => (t.id === saved.id ? saved : t)) ?? [])
+        setEditingTask(null)
+      } else {
+        saved = await createTask(newTask)
+        setTasks([saved, ...(tasks ?? [])])
+      }
 
       setCreating(false)
+      setEditingTask(null)
+
       setNewTask({
         name: "",
         description: "",
@@ -118,27 +149,70 @@ export default function Page() {
               <button
                 key={label}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={() => handleClick(f, label)}
+                onClick={() => handleClick(f)}
               >
                 {label}
               </button>
             ))}
+
+            <button
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              onClick={() => {
+                setCreating(true)
+                setEditingTask(null)
+                setNewTask({
+                  name: "",
+                  description: "",
+                  completed: false,
+                  priority: "LOW",
+                  tags: [],
+                })
+              }}
+            >
+              Create New Task
+            </button>
           </div>
 
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500">Error: {error}</div>}
 
           {tasks && (
-            <pre className="bg-gray-800 text-white p-2 rounded overflow-x-auto">
-              {JSON.stringify(tasks, null, 2)}
-            </pre>
+            <div className="space-y-2">
+              {tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="p-3 bg-gray-200 rounded flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-bold">{task.name}</div>
+                    <div className="text-sm text-gray-700">
+                      {task.description}
+                    </div>
+                    <div className="text-xs">Priority: {task.priority}</div>
+                    <div className="text-xs">
+                      Tags: {task.tags.map((t) => t.tagName).join(", ")}
+                    </div>
+                  </div>
+
+                  <button
+                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    onClick={() => handleEditClick(task)}
+                  >
+                    Edit
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </>
       )}
 
       {creating && (
         <div className="bg-gray-100 p-4 rounded">
-          <h2 className="mb-2 font-bold">Create New Task</h2>
+          <h2 className="mb-2 font-bold">
+            {editingTask ? "Edit Task" : "Create New Task"}
+          </h2>
+
           <input
             type="text"
             placeholder="Task name"
@@ -146,6 +220,7 @@ export default function Page() {
             onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
             className="mb-2 px-2 py-1 border rounded w-64"
           />
+
           <input
             type="text"
             placeholder="Description"
@@ -155,6 +230,7 @@ export default function Page() {
             }
             className="mb-2 px-2 py-1 border rounded w-64"
           />
+
           <input
             type="text"
             placeholder="Tags (comma separated)"
@@ -169,8 +245,9 @@ export default function Page() {
             }
             className="mb-2 px-2 py-1 border rounded w-64"
           />
+
           <select
-            value={newTask.priority ?? ""}
+            value={newTask.priority}
             onChange={(e) =>
               setNewTask({
                 ...newTask,
@@ -179,12 +256,12 @@ export default function Page() {
             }
             className="mb-2 px-2 py-1 border rounded w-64"
           >
-            <option value="">Select Priority</option>
             <option value="LOW">LOW</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="HIGH">HIGH</option>
           </select>
 
+          {/* Buttons */}
           <div className="space-x-2">
             <button
               className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
@@ -193,9 +270,13 @@ export default function Page() {
             >
               Save Task
             </button>
+
             <button
               className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              onClick={() => setCreating(false)}
+              onClick={() => {
+                setCreating(false)
+                setEditingTask(null)
+              }}
             >
               Cancel
             </button>
