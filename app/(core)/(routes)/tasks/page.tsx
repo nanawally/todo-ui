@@ -7,6 +7,8 @@ import {
   getAllTasks,
   getTaskByName,
   getTaskByTag,
+  getTaskByPriority,
+  getTaskByNoPriority,
 } from "@/app/_service/taskservice"
 
 type TaskFetcher = () => Promise<Task[]>
@@ -21,10 +23,12 @@ export default function Page() {
   const fetcher: Record<string, TaskFetcher> = {
     "All Tasks": getAllTasks,
     "Uncompleted Tasks": getAllUncompletedTasks,
-    "Search": () =>
+    Search: () =>
       searchMode === "name"
         ? getTaskByName(searchValue)
         : getTaskByTag(searchValue),
+    "Sort by Priority": getTaskByPriority,
+    "Sort by No Priority": getTaskByNoPriority,
   }
 
   const handleClick = async (fetcher: TaskFetcher) => {
@@ -42,27 +46,27 @@ export default function Page() {
 
   return (
     <>
-       <div className="p-4">
-      {/* Input field for search */}
-      <div className="mb-2">
-        <input
-          type="text"
-          placeholder={`Enter task ${searchMode}`}
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="px-2 py-1 border rounded w-64"
-        />
+      <div className="p-4">
+        {/* Input field for search */}
+        <div className="mb-2">
+          <input
+            type="text"
+            placeholder={`Enter task ${searchMode}`}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="px-2 py-1 border rounded w-64"
+          />
 
-        {/* Mode selector */}
-        <select
-          value={searchMode}
-          onChange={(e) => setSearchMode(e.target.value as "name" | "tag")}
-          className="ml-2 px-2 py-1 border rounded"
-        >
-          <option value="name">Name</option>
-          <option value="tag">Tag</option>
-        </select>
-      </div>
+          {/* Mode selector */}
+          <select
+            value={searchMode}
+            onChange={(e) => setSearchMode(e.target.value as "name" | "tag")}
+            className="ml-2 px-2 py-1 border rounded"
+          >
+            <option value="name">Name</option>
+            <option value="tag">Tag</option>
+          </select>
+        </div>
 
         <div className="mb-4 space-x-2">
           {Object.entries(fetcher).map(([label, fetcher]) => (

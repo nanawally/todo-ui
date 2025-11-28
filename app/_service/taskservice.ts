@@ -50,6 +50,30 @@ export async function getTaskByTag(tag: string) {
   return res.json()
 }
 
+export async function getTaskByPriority() {
+  const res = await fetch(`${BASE_URL}/sort/priority`, {
+    credentials: "include",
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch tasks")
+  }
+
+  return res.json()
+}
+
+export async function getTaskByNoPriority() {
+  const res = await fetch(`${BASE_URL}/sort/no-priority`, {
+    credentials: "include",
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch tasks")
+  }
+
+  return res.json()
+}
+
 /*export async function createTask(task) {
   const res = await fetch(`${BASE_URL}/new`, {
     method: "POST",
