@@ -26,6 +26,30 @@ export async function getAllTasks() {
   return res.json()
 }
 
+export async function getTaskByName(name: string) {
+  const res = await fetch(`${BASE_URL}/search/name/${name}`, {
+    credentials: "include",
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch tasks")
+  }
+
+  return res.json()
+}
+
+export async function getTaskByTag(tag: string) {
+  const res = await fetch(`${BASE_URL}/tag/${tag}`, {
+    credentials: "include",
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch tasks")
+  }
+
+  return res.json()
+}
+
 /*export async function createTask(task) {
   const res = await fetch(`${BASE_URL}/new`, {
     method: "POST",
