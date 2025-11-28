@@ -13,6 +13,10 @@
   --color-mycolor-900: #171923;
 }
 
+.font-serif {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

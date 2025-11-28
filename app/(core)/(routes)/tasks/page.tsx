@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Task } from "@/app/_types/Task"
-import { useState } from "react"
+import { Task } from "@/app/_types/Task";
+import { useState } from "react";
 import {
   getAllUncompletedTasks,
   getAllTasks,
@@ -11,76 +11,76 @@ import {
   getTaskByNoPriority,
   createTask,
   updateTask,
-} from "@/app/_service/taskservice"
-import { TaskDTO } from "@/app/_types/TaskDTO"
+} from "@/app/_service/taskservice";
+import { TaskDTO } from "@/app/_types/TaskDTO";
 
-type TaskFetcher = () => Promise<Task[]>
+type TaskFetcher = () => Promise<Task[]>;
 
 export default function Page() {
-  const [tasks, setTasks] = useState<Task[] | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [searchValue, setSearchValue] = useState("")
-  const [searchMode, setSearchMode] = useState<"name" | "tag">("name")
-  const [creating, setCreating] = useState(false)
+  const [tasks, setTasks] = useState<Task[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchMode, setSearchMode] = useState<"name" | "tag">("name");
+  const [creating, setCreating] = useState(false);
   const [newTask, setNewTask] = useState<TaskDTO>({
     name: "",
     description: "",
     completed: false,
     priority: "LOW",
     tags: [],
-  })
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  });
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const fetcher: Record<string, TaskFetcher> = {
     "All Tasks": getAllTasks,
     "Uncompleted Tasks": getAllUncompletedTasks,
-    Search: () =>
+    /*Search: () =>
       searchMode === "name"
         ? getTaskByName(searchValue)
-        : getTaskByTag(searchValue),
+        : getTaskByTag(searchValue),*/
     "Sort by Priority": getTaskByPriority,
     "Sort by No Priority": getTaskByNoPriority,
-  }
+  };
 
   const handleClick = async (fetcher: TaskFetcher) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const data = await fetcher()
-      setTasks(data)
-      setCreating(false)
-      setEditingTask(null)
+      const data = await fetcher();
+      setTasks(data);
+      setCreating(false);
+      setEditingTask(null);
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEditClick = (task: Task) => {
-    setEditingTask(task)
-    setCreating(true)
+    setEditingTask(task);
+    setCreating(true);
     setNewTask({
       name: task.name,
       description: task.description,
       completed: task.completed,
       priority: task.priority,
       tags: task.tags.map((t) => ({ tagName: t.tagName })),
-    })
-  }
+    });
+  };
 
   const handleSaveTask = async () => {
     if (!newTask.name) {
-      setError("Task name is required")
-      return
+      setError("Task name is required");
+      return;
     }
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      let saved: Task
+      let saved: Task;
 
       if (editingTask) {
         const mergedTask: Task = {
@@ -88,23 +88,23 @@ export default function Page() {
           ...newTask,
           tags:
             newTask.tags?.map((t) => ({
-              id: "", 
+              id: "",
               tagName: t.tagName,
-              taskType: "ACTIVE", 
+              taskType: "ACTIVE",
             })) ?? [],
-        }
+        };
 
-        saved = await updateTask(editingTask.id!, mergedTask)
+        saved = await updateTask(editingTask.id!, mergedTask);
 
-        setTasks(tasks?.map((t) => (t.id === saved.id ? saved : t)) ?? [])
-        setEditingTask(null)
+        setTasks(tasks?.map((t) => (t.id === saved.id ? saved : t)) ?? []);
+        setEditingTask(null);
       } else {
-        saved = await createTask(newTask)
-        setTasks([saved, ...(tasks ?? [])])
+        saved = await createTask(newTask);
+        setTasks([saved, ...(tasks ?? [])]);
       }
 
-      setCreating(false)
-      setEditingTask(null)
+      setCreating(false);
+      setEditingTask(null);
 
       setNewTask({
         name: "",
@@ -112,159 +112,218 @@ export default function Page() {
         completed: false,
         priority: "LOW",
         tags: [],
-      })
+      });
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  // PLACEHOLDER FOR MOVE COMPLETED TO TRASH
+  const handleMoveCompletedToTrash = () => {
+    console.log("Move completed tasks to trash");
+  };
 
   return (
-    <div className="p-4">
+    <div className=" m-0 p-5 flex flex-col items-center space-y-4">
+      <h1 className=" font-bold text-3xl text-[#453688]">Your tasks</h1>
       {!creating && (
         <>
-          {/* Search input and mode selector */}
-          <div className="mb-2">
-            <input
-              type="text"
-              placeholder={`Enter task ${searchMode}`}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="px-2 py-1 border rounded w-64"
-            />
-            <select
-              value={searchMode}
-              onChange={(e) => setSearchMode(e.target.value as "name" | "tag")}
-              className="ml-2 px-2 py-1 border rounded"
-            >
-              <option value="name">Name</option>
-              <option value="tag">Tag</option>
-            </select>
-          </div>
-
-          {/* Buttons */}
-          <div className="mb-4 space-x-2">
-            {Object.entries(fetcher).map(([label, f]) => (
-              <button
-                key={label}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={() => handleClick(f)}
-              >
-                {label}
-              </button>
-            ))}
-
+          {/* Top buttons */}
+          <div className="flex flex-row space-x-3">
             <button
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-4 py-2 rounded bg-[#BFDBF7] border border-transparent hover:border-[#646cff]"
               onClick={() => {
-                setCreating(true)
-                setEditingTask(null)
+                setCreating(true);
+                setEditingTask(null);
                 setNewTask({
                   name: "",
                   description: "",
                   completed: false,
                   priority: "LOW",
                   tags: [],
-                })
+                });
               }}
             >
-              Create New Task
+              + Register New Task
+            </button>
+
+            <button
+              className="px-4 py-2 bg-[#BFDBF7] rounded hover:border-[#646cff]"
+              onClick={handleMoveCompletedToTrash}
+            >
+              Move Completed to Trash
             </button>
           </div>
 
+          {/* Search */}
+          <div className="mt-5 flex flex-col items-center space-y-3 w-1/2">
+            <div className="flex flex-row items-center gap-4">
+              <label className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  value="name"
+                  checked={searchMode === "name"}
+                  onChange={() => setSearchMode("name")}
+                />
+                Search by Name
+              </label>
+              <label className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  value="tag"
+                  checked={searchMode === "tag"}
+                  onChange={() => setSearchMode("tag")}
+                />
+                Search by Tag
+              </label>
+            </div>
+            <div className="flex flex-row gap-2 mt-2">
+              <input
+                type="text"
+                placeholder={`Enter ${searchMode}`}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="px-2 py-1 border rounded w-64"
+              />
+              <button
+                className="px-4 py-2 bg-[#BFDBF7] rounded hover:border-[#646cff]"
+                onClick={() =>
+                  handleClick(
+                    searchMode === "name"
+                      ? () => getTaskByName(searchValue)
+                      : () => getTaskByTag(searchValue)
+                  )
+                }
+              >
+                Search
+              </button>
+            </div>
+          </div>
+
+          {/* Filter */}
+          <div className="mt-5 flex flex-row items-center gap-2">
+            <span className="font-semibold mr-2">Filter tasks:</span>
+            {Object.entries(fetcher).map(([label, f]) => (
+              <button
+                key={label}
+                className="px-3 py-1 bg-[#BFDBF7] rounded hover:border-[#646cff]"
+                onClick={() => handleClick(f)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500">Error: {error}</div>}
 
           {tasks && (
-            <div className="space-y-2">
-              {tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="p-3 bg-gray-200 rounded flex justify-between items-center"
-                >
-                  <div>
-                    <div className="font-bold">{task.name}</div>
-                    <div className="text-sm text-gray-700">
-                      {task.description}
-                    </div>
-                    <div className="text-xs">Priority: {task.priority}</div>
-                    <div className="text-xs">
-                      Tags: {task.tags.map((t) => t.tagName).join(", ")}
+            <div className="mt-5 font-serif">
+              <div className="flex flex-wrap gap-5 justify-evenly items-start w-full">
+                {tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="w-[300px] p-3 font-serif border border-gray-300 rounded-[30px] text-[#034780] bg-[#FFF9BF] bg-opacity-80"
+                  >
+                    <p>
+                      <strong>Name:</strong> {task.name}
+                    </p>
+
+                    {task.description && (
+                      <p>
+                        <strong>Description:</strong> {task.description}
+                      </p>
+                    )}
+
+                    <p>
+                      <strong>Priority:</strong> {task.priority}
+                    </p>
+
+                    {task.tags.length > 0 && (
+                      <p>
+                        <strong>Tags:</strong>{" "}
+                        {task.tags.map((t) => t.tagName).join(", ")}
+                      </p>
+                    )}
+
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        className="px-3 py-1 bg-[#FFB2E6] rounded-[30px] hover:bg-yellow-600"
+                        onClick={() => handleEditClick(task)}
+                      >
+                        ✏️ Edit
+                      </button>
                     </div>
                   </div>
-
-                  <button
-                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                    onClick={() => handleEditClick(task)}
-                  >
-                    Edit
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </>
       )}
 
       {creating && (
-        <div className="bg-gray-100 p-4 rounded">
+        <div className=" p-4 rounded flex flex-col items-center gap-3">
           <h2 className="mb-2 font-bold">
             {editingTask ? "Edit Task" : "Create New Task"}
           </h2>
 
-          <input
-            type="text"
-            placeholder="Task name"
-            value={newTask.name ?? ""}
-            onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
-            className="mb-2 px-2 py-1 border rounded w-64"
-          />
+          <div className="flex flex-row items-center justify-center gap-2">
+            <input
+              type="text"
+              placeholder="Task name"
+              value={newTask.name ?? ""}
+              onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+              className="mb-2 px-2 py-1 border rounded w-64"
+            />
 
-          <input
-            type="text"
-            placeholder="Description"
-            value={newTask.description ?? ""}
-            onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
-            }
-            className="mb-2 px-2 py-1 border rounded w-64"
-          />
+            <input
+              type="text"
+              placeholder="Description"
+              value={newTask.description ?? ""}
+              onChange={(e) =>
+                setNewTask({ ...newTask, description: e.target.value })
+              }
+              className="mb-2 px-2 py-1 border rounded w-64"
+            />
 
-          <input
-            type="text"
-            placeholder="Tags (comma separated)"
-            value={newTask.tags?.map((t) => t.tagName).join(",") ?? ""}
-            onChange={(e) =>
-              setNewTask({
-                ...newTask,
-                tags: e.target.value
-                  .split(",")
-                  .map((t) => ({ tagName: t.trim() })),
-              })
-            }
-            className="mb-2 px-2 py-1 border rounded w-64"
-          />
+            <input
+              type="text"
+              placeholder="Tags (comma separated)"
+              value={newTask.tags?.map((t) => t.tagName).join(",") ?? ""}
+              onChange={(e) =>
+                setNewTask({
+                  ...newTask,
+                  tags: e.target.value
+                    .split(",")
+                    .map((t) => ({ tagName: t.trim() })),
+                })
+              }
+              className="mb-2 px-2 py-1 border rounded w-64 "
+            />
 
-          <select
-            value={newTask.priority}
-            onChange={(e) =>
-              setNewTask({
-                ...newTask,
-                priority: e.target.value as Task["priority"],
-              })
-            }
-            className="mb-2 px-2 py-1 border rounded w-64"
-          >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-          </select>
+            <select
+              value={newTask.priority}
+              onChange={(e) =>
+                setNewTask({
+                  ...newTask,
+                  priority: e.target.value as Task["priority"],
+                })
+              }
+              className="mb-2 px-2 py-1 border rounded w-64"
+            >
+              <option value="LOW">LOW</option>
+              <option value="MEDIUM">MEDIUM</option>
+              <option value="HIGH">HIGH</option>
+            </select>
+          </div>
 
           {/* Buttons */}
-          <div className="space-x-2">
+          <div className="flex flex-row justify-center gap-2 mt-2">
             <button
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="px-4 py-2 bg-[#BFDBF7] rounded hover:bg-green-600"
               onClick={handleSaveTask}
               disabled={loading}
             >
@@ -272,10 +331,10 @@ export default function Page() {
             </button>
 
             <button
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="px-4 py-2 bg-[#6196B7] rounded hover:bg-gray-400"
               onClick={() => {
-                setCreating(false)
-                setEditingTask(null)
+                setCreating(false);
+                setEditingTask(null);
               }}
             >
               Cancel
@@ -287,5 +346,5 @@ export default function Page() {
         </div>
       )}
     </div>
-  )
+  );
 }
