@@ -103,9 +103,3 @@ export async function updateTask(id: string, task: Task) {
   return res.json()
 }
 
-/*export async function deleteTask(id) {
-  return fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE",
-    credentials: "include",
-  })
-}*/
