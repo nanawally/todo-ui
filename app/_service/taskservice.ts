@@ -1,4 +1,4 @@
-// src/services/tasksService.ts
+import { TaskDTO } from "../_types/TaskDTO"
 
 const BASE_URL = "http://localhost:8090/v2/tasks"
 
@@ -74,17 +74,22 @@ export async function getTaskByNoPriority() {
   return res.json()
 }
 
-/*export async function createTask(task) {
+export async function createTask(task: TaskDTO) {
   const res = await fetch(`${BASE_URL}/new`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(task),
   })
+
+  if (!res.ok) {
+    throw new Error(`Failed to create task: ${res.status} ${res.statusText}`)
+  }
+
   return res.json()
 }
 
-export async function deleteTask(id) {
+/*export async function deleteTask(id) {
   return fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
     credentials: "include",
