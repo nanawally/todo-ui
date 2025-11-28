@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function Page() {
   const [apiData, setApiData] = useState<Task[] | null>(null);
-  
+
   const load = async () => {
     const data = await apiFetch<Task[]>("http://localhost:8090/v2/tasks/", {
       credentials: "include",
@@ -14,19 +14,19 @@ export default function Page() {
       // Authorization: `Bearer ${token}`,
       //},
     });
-    
-     console.log("Fetched data:", data); // this doesn't appear
+
+    console.log("Fetched data:", data);
 
     if (!data) return;
-    
+
     setApiData(data);
   };
 
   return (
     <>
-      <button onClick={load}>Load Data</button>
+      <button onClick={load} className=" text-blue-200">Load Data</button>
       <div className=" bg-amber-200">HELLO</div>
-      <p>{JSON.stringify(apiData)}</p>
+      <p className=" text-amber-50">{JSON.stringify(apiData)}</p>
     </>
   );
 }
