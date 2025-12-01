@@ -21,7 +21,6 @@ export default function Page() {
 
   const fetcher: Record<string, DeletedTaskFetcher> = {
     "All Deleted Tasks": getAllDeletedTasks,
-    Search: () => getDeletedTaskByTag(searchValue),
   }
 
   const handleClick = async (fetchFn: DeletedTaskFetcher) => {
@@ -97,9 +96,10 @@ export default function Page() {
   }
 
   return (
-    <div className="p-4">
+    <div className=" m-0 p-5 flex flex-col items-center space-y-4">
+      <h1 className=" font-bold text-3xl text-[#453688]">Your Trashcan</h1>
       {/* Tag Search Input */}
-      <div className="mb-2 text-black">
+      <div className="flex flex-row space-x-3">
         <input
           type="text"
           placeholder="Search by tag"
@@ -114,7 +114,7 @@ export default function Page() {
         {Object.entries(fetcher).map(([label, f]) => (
           <button
             key={label}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="px-4 py-2 bg-[#BFDBF7] rounded hover:border-[#646cff]"
             onClick={() => handleClick(f)}
           >
             {label}
@@ -145,28 +145,38 @@ export default function Page() {
             .map((task) => (
               <div
                 key={task.id}
-                className="p-3 bg-gray-200 rounded flex justify-between items-center"
+                className="w-[300px] p-3 font-serif border border-gray-300 rounded-[30px] text-[#034780] bg-[#FFF9BF] bg-opacity-80"
               >
                 <div>
-                  <div className="font-bold text-black">{task.name}</div>
-                  <div className="text-black">{task.description}</div>
-                  <div className="text-black">Priority: {task.priority}</div>
-                  <div className="text-black">
-                    Tags: {task.tags.map((t) => t.tagName).join(", ")}
-                  </div>
+                  <p>
+                    <strong>Name:</strong> {task.name}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {task.description}
+                  </p>
+
+                  <p>
+                    <strong>Priority:</strong> {task.priority}
+                  </p>
+                  <p>
+                    <strong>Tags:</strong>{" "}
+                    {task.tags.map((t) => t.tagName).join(", ")}
+                  </p>
                 </div>
-                <button
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => handleRestoreOne(task.id)}
-                >
-                  Restore
-                </button>
-                <button
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  onClick={() => handleDeleteOne(task.id)}
-                >
-                  Delete
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="px-3 py-1 bg-green-500 rounded-[30px] text-white hover:bg-green-600"
+                    onClick={() => handleRestoreOne(task.id)}
+                  >
+                    Restore
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-red-500 rounded-[30px] text-white hover:bg-red-600"
+                    onClick={() => handleDeleteOne(task.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
         </div>
