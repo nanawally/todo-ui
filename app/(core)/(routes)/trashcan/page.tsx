@@ -17,7 +17,6 @@ export default function Page() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchValue, setSearchValue] = useState("")
-  const [searchMode, setSearchMode] = useState<"tag">("tag")
 
   const fetcher: Record<string, DeletedTaskFetcher> = {
     "All Deleted Tasks": getAllDeletedTasks,
@@ -59,7 +58,7 @@ export default function Page() {
     setError(null)
     try {
       await restoreTaskById(id)
-      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? null)
+      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? [])
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -73,7 +72,7 @@ export default function Page() {
 
     try {
       await deleteTaskById(id)
-      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? null)
+      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? [])
     } catch (err: any) {
       setError(err.message)
     } finally {

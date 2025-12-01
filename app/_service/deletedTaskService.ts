@@ -5,6 +5,10 @@ export async function getAllDeletedTasks() {
     credentials: "include",
   })
 
+  if (res.status === 204) {
+    return []
+  }
+
   if (!res.ok) {
     throw new Error("Failed to fetch tasks")
   }
@@ -17,6 +21,10 @@ export async function getDeletedTaskByTag(tag: string) {
     credentials: "include",
   })
 
+  if (res.status === 204) {
+    return []
+  }
+
   if (!res.ok) {
     throw new Error("Failed to fetch tasks")
   }
@@ -24,11 +32,36 @@ export async function getDeletedTaskByTag(tag: string) {
   return res.json()
 }
 
+export async function restoreTaskById(id: string) {
+  const res = await fetch(`${BASE_URL}/restore/${id}`, {
+    method: "PUT",
+    credentials: "include",
+  })
+
+  if (res.status === 404) {
+    throw new Error("Task not found")
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to restore task")
+  }
+  return res.text()
+}
+
 export async function deleteTaskById(id: string) {
   const res = await fetch(`${BASE_URL}/delete/${id}`, {
     method: "DELETE",
     credentials: "include",
   })
+
+  if (res.status === 404) {
+    throw new Error("Task not found")
+  }
+
+  if (res.status === 204) {
+    return "Task successfully deleted"
+  }
+
   if (!res.ok) {
     throw new Error("Failed to delete task")
   }
@@ -40,19 +73,15 @@ export async function deleteAllTasks() {
     method: "DELETE",
     credentials: "include",
   })
+
+  if (res.status === 204) {
+    return "Trashcan successfully emptied"
+  }
+
   if (!res.ok) {
     throw new Error("Failed to delete all tasks")
   }
+
   return res
 }
 
-export async function restoreTaskById(id: string) {
-  const res = await fetch(`${BASE_URL}/restore/${id}`, {
-    method: "PUT",
-    credentials: "include",
-  })
-  if (!res.ok) {
-    throw new Error("Failed to restore task")
-  }
-  return res.text()
-}
