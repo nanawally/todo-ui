@@ -7,7 +7,7 @@ import {
   getDeletedTaskByTag,
   deleteTaskById,
   deleteAllTasks,
-  restoreTaskById
+  restoreTaskById,
 } from "@/app/_service/deletedTaskService"
 
 type DeletedTaskFetcher = () => Promise<DeletedTask[]>
@@ -22,7 +22,6 @@ export default function Page() {
   const fetcher: Record<string, DeletedTaskFetcher> = {
     "All Deleted Tasks": getAllDeletedTasks,
     Search: () => getDeletedTaskByTag(searchValue),
-
   }
 
   const handleClick = async (fetchFn: DeletedTaskFetcher) => {
@@ -55,6 +54,19 @@ export default function Page() {
 
     load()
   }, [])
+
+  const handleRestoreOne = async (id: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await restoreTaskById(id)
+      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? null)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDeleteOne = async (id: string) => {
     setLoading(true)
@@ -143,6 +155,12 @@ export default function Page() {
                     Tags: {task.tags.map((t) => t.tagName).join(", ")}
                   </div>
                 </div>
+                <button
+                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                  onClick={() => handleRestoreOne(task.id)}
+                >
+                  Restore
+                </button>
                 <button
                   className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                   onClick={() => handleDeleteOne(task.id)}

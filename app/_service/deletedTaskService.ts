@@ -48,11 +48,11 @@ export async function deleteAllTasks() {
 
 export async function restoreTaskById(id: string) {
   const res = await fetch(`${BASE_URL}/restore/${id}`, {
-    method: "POST",
+    method: "PUT",
     credentials: "include",
   })
   if (!res.ok) {
     throw new Error("Failed to restore task")
   }
-  return res.json()
+  return res.text()
 }
