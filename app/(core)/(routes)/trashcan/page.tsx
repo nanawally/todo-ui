@@ -7,6 +7,7 @@ import {
   getDeletedTaskByTag,
   deleteTaskById,
   deleteAllTasks,
+  restoreTaskById
 } from "@/app/_service/deletedTaskService"
 
 type DeletedTaskFetcher = () => Promise<DeletedTask[]>
@@ -21,6 +22,7 @@ export default function Page() {
   const fetcher: Record<string, DeletedTaskFetcher> = {
     "All Deleted Tasks": getAllDeletedTasks,
     Search: () => getDeletedTaskByTag(searchValue),
+
   }
 
   const handleClick = async (fetchFn: DeletedTaskFetcher) => {
