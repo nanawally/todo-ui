@@ -10,7 +10,7 @@ export default function AboutPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-
+    
     const fetchProtected = async () => {
       const res = await fetch("http://localhost:8080/about", {
         credentials: "include",
