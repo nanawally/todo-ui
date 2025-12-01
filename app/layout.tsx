@@ -41,7 +41,7 @@ export default async function RootLayout({
           <nav className=" flex justify-center p-4">
             <h1>Hello {user?.sub ?? "Guest"}</h1>
           </nav>
-          <div className=" bg-gray-900 flex-1">{children}</div>
+          <div className=" bg-fuchsia-100 flex-1">{children}</div>
           {/* Footer */}
           <footer className=" p-4 flex justify-center">
             <p>Copyrights</p>
