@@ -11,6 +11,9 @@ import {
   getTaskByNoPriority,
   createTask,
   updateTask,
+  completeTask,
+  moveTaskToTrash,
+  moveCompletedTasksToTrash,
 } from "@/app/_service/taskservice";
 import { TaskDTO } from "@/app/_types/TaskDTO";
 
@@ -35,14 +38,10 @@ export default function Page() {
   const fetcher: Record<string, TaskFetcher> = {
     "All Tasks": getAllTasks,
     "Uncompleted Tasks": getAllUncompletedTasks,
-    /*Search: () =>
-      searchMode === "name"
-        ? getTaskByName(searchValue)
-        : getTaskByTag(searchValue),*/
     "Sort by Priority": getTaskByPriority,
     "Sort by No Priority": getTaskByNoPriority,
   };
-
+  
   const handleClick = async (fetcher: TaskFetcher) => {
     setLoading(true);
     setError(null);
@@ -120,9 +119,52 @@ export default function Page() {
     }
   };
 
-  // PLACEHOLDER FOR MOVE COMPLETED TO TRASH
-  const handleMoveCompletedToTrash = () => {
-    console.log("Move completed tasks to trash");
+  const handleCompleteTask = async (id: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const updated = await completeTask(id);
+
+      setTasks(
+        (prev) =>
+          prev?.map((t) => (t.id === id ? { ...t, completed: true } : t)) ?? []
+      );
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMoveTaskToTrash = async (id: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await moveTaskToTrash(id);
+
+      setTasks((prev) => prev?.filter((t) => t.id !== id) ?? []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMoveCompletedToTrash = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await moveCompletedTasksToTrash();
+
+      setTasks((prev) => prev?.filter((t) => !t.completed) ?? []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -215,7 +257,7 @@ export default function Page() {
               </button>
             ))}
           </div>
-          
+
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500">Error: {error}</div>}
 
@@ -254,6 +296,20 @@ export default function Page() {
                         onClick={() => handleEditClick(task)}
                       >
                         ✏️ Edit
+                      </button>
+
+                      <button
+                        className="px-3 py-1 bg-[#FFB2E6] rounded-[30px] hover:bg-red-500"
+                        onClick={() => handleMoveTaskToTrash(task.id!)}
+                      >
+                        🗑️ Trash
+                      </button>
+
+                      <button
+                        className="px-3 py-1 bg-[#FFB2E6] rounded-[30px] hover:bg-green-500"
+                        onClick={() => handleCompleteTask(task.id!)}
+                      >
+                        ✅ Complete
                       </button>
                     </div>
                   </div>
