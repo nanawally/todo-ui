@@ -38,7 +38,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <section className=" min-h-screen flex flex-col">
-          
           {/* Navbar */}
           <nav className="grid grid-cols-3 items-center p-4 bg-white shadow">
             {/* LEFT: nav buttons */}
@@ -64,7 +63,14 @@ export default async function RootLayout({
             </div>
 
             {/* RIGHT: empty spacer so center stays centered */}
-            <div>{/* PLACEHOLDER FOR LOGOUT & ADMIN TASKS NAV */}</div>
+            <div>
+              <Link
+                href="/logout"
+                className="px-3 py-1 rounded bg-red-300 hover:bg-red-500"
+              >
+                🚪 Logout
+              </Link>
+            </div>
           </nav>
 
           <div className=" bg-fuchsia-100 flex-1">{children}</div>
