@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cookies } from "next/headers";
 import { decodeJwt } from "./_utility/jwt";
+import Link from "next/link";
 
 // CTRL + SHIFT + P -> typescript version
 
@@ -37,11 +38,37 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <section className=" min-h-screen flex flex-col">
+          
           {/* Navbar */}
-          <nav className=" flex justify-center p-4">
-            <h1>Hello {user?.sub ?? "Guest"}</h1>
+          <nav className="grid grid-cols-3 items-center p-4 bg-white shadow">
+            {/* LEFT: nav buttons */}
+            <div className="flex gap-3">
+              <Link
+                href="/tasks"
+                className="px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#A5C8E1] border border-transparent hover:border-[#646cff]"
+              >
+                📋 Tasks
+              </Link>
+
+              <Link
+                href="/trashcan"
+                className="px-3 py-1 rounded bg-[#F7BFBF] hover:bg-[#E19A9A] border border-transparent hover:border-[#d9534f]"
+              >
+                🗑️ Trashcan
+              </Link>
+            </div>
+
+            {/* CENTER: greeting */}
+            <div className="flex justify-center">
+              <h1>Hello {user?.sub ?? "Guest"}</h1>
+            </div>
+
+            {/* RIGHT: empty spacer so center stays centered */}
+            <div>{/* PLACEHOLDER FOR LOGOUT & ADMIN TASKS NAV */}</div>
           </nav>
+
           <div className=" bg-fuchsia-100 flex-1">{children}</div>
+
           {/* Footer */}
           <footer className=" p-4 flex justify-center">
             <p>Copyrights</p>

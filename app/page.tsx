@@ -4,10 +4,9 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div>
-      <div className=" h-screen flex flex-col justify-center items-center text-amber-900">
-        <Link href="/about">About</Link>
-        <Link href="/tasks">Tasks</Link>
+      <div className=" h-screen flex flex-col justify-center items-center text-[#453688]">
         <Link href="/login">Login</Link>
+        <Link href="/about">About</Link>
       </div>
     </div>
   );
