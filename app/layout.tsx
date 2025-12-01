@@ -32,6 +32,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
   const user = token ? decodeJwt(token) : null;
+
   return (
     <html lang="en">
       <body
@@ -63,12 +64,15 @@ export default async function RootLayout({
             </div>
 
             {/* RIGHT: empty spacer so center stays centered */}
-            <div>
+            <div className="flex justify-end gap-3">
               <Link
                 href="/logout"
-                className="px-3 py-1 rounded bg-red-300 hover:bg-red-500"
+                className="px-3 py-1 rounded bg-[#F7BFBF] hover:bg-[#E19A9A]"
               >
                 🚪 Logout
+              </Link>
+              <Link href="/register" className="ml-2 px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#A5C8E1]">
+                📝 Register
               </Link>
             </div>
           </nav>
