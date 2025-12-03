@@ -57,11 +57,11 @@ export async function deleteTaskById(id: string) {
   if (res.status === 404) {
     throw new Error("Task not found")
   }
-
+  
   if (res.status === 204) {
     return "Task successfully deleted"
   }
-
+  
   if (!res.ok) {
     throw new Error("Failed to delete task")
   }

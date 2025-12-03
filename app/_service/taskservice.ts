@@ -7,7 +7,7 @@ export async function getAllUncompletedTasks() {
   const res = await fetch(`${BASE_URL}/`, {
     credentials: "include",
   })
-
+  
   if (res.status === 204) {
     return []
   }

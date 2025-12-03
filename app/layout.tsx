@@ -62,7 +62,7 @@ export default async function RootLayout({
             <div className="flex justify-center">
               <h1>Hello {user?.sub ?? "Guest"}</h1>
             </div>
-
+            
             {/* RIGHT: empty spacer so center stays centered */}
             <div className="flex justify-end gap-3">
               <Link
