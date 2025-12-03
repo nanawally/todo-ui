@@ -7,23 +7,20 @@ export default function AboutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     
     const fetchProtected = async () => {
       const res = await fetch("http://localhost:8080/about", {
         credentials: "include",
-        // headers: {
-        // Authorization: `Bearer ${token}`,
-        //},
       });
       
       if (res.status === 401 || res.status === 403) {
         router.push("/login");
         return;
       }
-
+      
       const text = await res.text();
       setData(text);
       setLoading(false);

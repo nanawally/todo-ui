@@ -1,18 +1,20 @@
-"use client"
+"use client";
 
-import { CustomUser } from "@/app/_types/CustomUser"
-import { UserRole } from "@/app/_types/UserRole"
-import { useEffect, useState } from "react"
+import { CustomUser } from "@/app/_types/CustomUser";
+import { UserRole } from "@/app/_types/UserRole";
+import { useEffect, useState } from "react";
 import {
   getAllUsers,
   registerNewUser,
   deleteUserById,
-} from "@/app/_service/adminservice"
+} from "@/app/_service/adminservice";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const [users, setUsers] = useState<CustomUser[] | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [users, setUsers] = useState<CustomUser[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const [newUser, setNewUser] = useState({
     username: "",
@@ -22,33 +24,39 @@ export default function Page() {
     isCredentialsNonExpired: true,
     isEnabled: true,
     roles: [] as UserRole[],
-  })
-
-  // Fetch all users
-  const fetchUsers = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getAllUsers()
-      setUsers(data)
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  });
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+    }
+  }, [router]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getAllUsers();
+      setUsers(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   // Handle new user registration
   const handleRegister = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const created = await registerNewUser(newUser as CustomUser)
-      setUsers((prev) => (prev ? [...prev, created] : [created]))
+      const created = await registerNewUser(newUser as CustomUser);
+      setUsers((prev) => (prev ? [...prev, created] : [created]));
       // Reset form
       setNewUser({
         username: "",
@@ -58,27 +66,27 @@ export default function Page() {
         isCredentialsNonExpired: true,
         isEnabled: true,
         roles: [],
-      })
+      });
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Handle deleting a user
   const handleDelete = async (id: string) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      await deleteUserById(id)
-      setUsers((prev) => prev?.filter((u) => u.id !== id) ?? [])
+      await deleteUserById(id);
+      setUsers((prev) => prev?.filter((u) => u.id !== id) ?? []);
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="m-0 p-5 flex flex-col items-center space-y-4">
@@ -118,8 +126,8 @@ export default function Page() {
                 setNewUser((prev) => {
                   const roles = prev.roles.includes("USER")
                     ? prev.roles.filter((r) => r !== "USER")
-                    : [...prev.roles, "USER"]
-                  return { ...prev, roles }
+                    : [...prev.roles, "USER"];
+                  return { ...prev, roles };
                 })
               }
             />
@@ -133,8 +141,8 @@ export default function Page() {
                 setNewUser((prev) => {
                   const roles = prev.roles.includes("ADMIN")
                     ? prev.roles.filter((r) => r !== "ADMIN")
-                    : [...prev.roles, "ADMIN"]
-                  return { ...prev, roles }
+                    : [...prev.roles, "ADMIN"];
+                  return { ...prev, roles };
                 })
               }
             />
@@ -166,8 +174,7 @@ export default function Page() {
                   <strong>Roles:</strong> {user.roles.join(", ")}
                 </p>
                 <p>
-                  <strong>Enabled:</strong>{" "}
-                  {user.isEnabled ? "Yes" : "No"}
+                  <strong>Enabled:</strong> {user.isEnabled ? "Yes" : "No"}
                 </p>
               </div>
               <button
@@ -181,5 +188,5 @@ export default function Page() {
         </div>
       )}
     </div>
-  )
+  );
 }

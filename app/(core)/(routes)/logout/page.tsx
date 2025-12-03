@@ -1,44 +1,25 @@
 "use client";
 
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+type Status = "idle" | "loading" | "success" | "error";
+
 export default function Page() {
-  //const router = useRouter(); // always call hook
-  const [hydrated, setHydrated] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
-  /*
-  // mark hydration complete
+  const router = useRouter();
+
   useEffect(() => {
-    setHydrated(true);
-  }, []);
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+    }
+  }, [router]);
 
-  // auto-redirect if user not logged in
-  useEffect(() => {
-    if (!hydrated) return;
-
-    const checkLogin = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/logout", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.status === 302 || res.status === 401 || res.status === 403) {
-          router.push("/login");
-        }
-      } catch (err) {
-        console.error("Failed to check login:", err);
-      }
-    };
-
-    checkLogin();
-  }, [hydrated, router]);
-  */
   const logout = async () => {
+    setStatus("idle");
     setError(null);
-    setSuccess(false);
 
     try {
       const res = await fetch("http://localhost:8080/auth/logout", {
@@ -54,20 +35,22 @@ export default function Page() {
       if (!res.ok) {
         const body = await res.text();
         setError(body || "Logout failed.");
+        setStatus("error");
         return;
       }
 
       localStorage.clear();
-      setSuccess(true);
+      setStatus("success");
 
-      router.push("/login");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     } catch (err) {
       setError("Network error: backend unreachable");
+      setStatus("error");
     }
   };
-
-  //if (!hydrated) return null;
-
+  
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto p-6">
       <h1 className="text-xl font-bold">Logout</h1>
@@ -81,10 +64,11 @@ export default function Page() {
         Logout
       </button>
 
-      {error && <p className="text-red-500">{error}</p>}
-      {success && (
+      {status === "loading" && <p>Processing logout...</p>}
+      {status === "error" && error && <p className="text-red-500">{error}</p>}
+      {status === "success" && (
         <p className="text-green-500">
-          Logged out! You may now close the page or login again.
+          Logged out! You may now close the page or log in again.
         </p>
       )}
     </div>

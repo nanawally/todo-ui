@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/app/_components/button.component"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function Page() {
@@ -8,7 +9,8 @@ export default function Page() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
-
+  const router = useRouter();
+  
   const login = async () => {
     setError(null)
     setSuccess(false)
@@ -38,6 +40,7 @@ export default function Page() {
       console.log(token)
 
       setSuccess(true)
+      router.push("/tasks");
     } catch (err) {
       setError("Network error: backend unreachable")
     }

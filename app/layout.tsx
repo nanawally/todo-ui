@@ -32,7 +32,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
   const user = token ? decodeJwt(token) : null;
-
+  
   return (
     <html lang="en">
       <body
@@ -56,23 +56,41 @@ export default async function RootLayout({
               >
                 🗑️ Trashcan
               </Link>
+              
+              <Link
+                href="/about"
+                className="px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#E19A9A] border border-transparent hover:border-[#d9534f]"
+              >
+                ℹ️ About
+              </Link>
             </div>
 
             {/* CENTER: greeting */}
             <div className="flex justify-center">
               <h1>Hello {user?.sub ?? "Guest"}</h1>
             </div>
-            
+
             {/* RIGHT: empty spacer so center stays centered */}
             <div className="flex justify-end gap-3">
+              <Link
+                href="/admin"
+                className="ml-2 px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#A5C8E1]"
+              >
+                🛠️ Admin
+              </Link>
+
+              <Link
+                href="/register"
+                className="ml-2 px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#A5C8E1]"
+              >
+                📝 Register
+              </Link>
+
               <Link
                 href="/logout"
                 className="px-3 py-1 rounded bg-[#F7BFBF] hover:bg-[#E19A9A]"
               >
                 🚪 Logout
-              </Link>
-              <Link href="/register" className="ml-2 px-3 py-1 rounded bg-[#BFDBF7] hover:bg-[#A5C8E1]">
-                📝 Register
               </Link>
             </div>
           </nav>
