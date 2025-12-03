@@ -78,10 +78,14 @@ export async function deleteAllTasks() {
     return "Trashcan successfully emptied"
   }
 
+  if (res.status === 404) {
+    const message = await res.text();
+    throw new Error(message);
+  }
+
   if (!res.ok) {
     throw new Error("Failed to delete all tasks")
   }
 
   return res
 }
-
