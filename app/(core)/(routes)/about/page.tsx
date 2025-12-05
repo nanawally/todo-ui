@@ -1,34 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 
 export default function AboutPage() {
-  const router = useRouter();
+  const checkingAuth = useRequireAuth("http://localhost:8080/about");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<string | null>(null);
-  
+
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    if (checkingAuth !== false) return;
     
-    const fetchProtected = async () => {
-      const res = await fetch("http://localhost:8080/about", {
-        credentials: "include",
-      });
-      
-      if (res.status === 401 || res.status === 403) {
-        router.push("/login");
-        return;
+    const fetchAbout = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/about", {
+          credentials: "include",
+        });
+
+        const text = await res.text();
+        setData(text);
+      } catch (err) {
+        console.error("Error fetching about data: ", err);
+      } finally {
+        setLoading(false);
       }
-      
-      const text = await res.text();
-      setData(text);
-      setLoading(false);
     };
 
-    fetchProtected();
-  }, []);
-
+    fetchAbout();
+  }, [checkingAuth]);
+  
+   if (checkingAuth === null) return null
   if (loading) return <p>Loading...</p>;
 
   return (

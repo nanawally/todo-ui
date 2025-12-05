@@ -2,23 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function Page() {
+  const checkingAuth = useRequireAuth("http://localhost:8080/auth/check");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
-
   const logout = async () => {
-    setStatus("idle");
+    setStatus("loading");
     setError(null);
 
     try {
@@ -50,7 +45,9 @@ export default function Page() {
       setStatus("error");
     }
   };
-  
+
+  if (checkingAuth !== false) return null;
+
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto p-6">
       <h1 className="text-xl font-bold">Logout</h1>

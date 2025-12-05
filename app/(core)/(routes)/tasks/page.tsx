@@ -1,7 +1,9 @@
 "use client";
 
 import { Task } from "@/app/_types/Task";
-import { useState } from "react";
+import { TaskDTO } from "@/app/_types/TaskDTO";
+import { useState, useEffect } from "react";
+import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 import {
   getAllUncompletedTasks,
   getAllTasks,
@@ -15,11 +17,11 @@ import {
   moveTaskToTrash,
   moveCompletedTasksToTrash,
 } from "@/app/_service/taskservice";
-import { TaskDTO } from "@/app/_types/TaskDTO";
 
 type TaskFetcher = () => Promise<Task[]>;
 
 export default function Page() {
+  const checkingAuth = useRequireAuth("http://localhost:8090/v2/tasks/");
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +43,26 @@ export default function Page() {
     "Sort by Priority": getTaskByPriority,
     "Sort by No Priority": getTaskByNoPriority,
   };
-  
+
+  useEffect(() => {
+    if (checkingAuth === false) {
+      const loadTasks = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const data = await getAllUncompletedTasks();
+          setTasks(data);
+        } catch (err: any) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      loadTasks();
+    }
+  }, [checkingAuth]);
+
   const handleClick = async (fetcher: TaskFetcher) => {
     setLoading(true);
     setError(null);
@@ -166,6 +187,9 @@ export default function Page() {
       setLoading(false);
     }
   };
+
+  if (checkingAuth === null) return null;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className=" m-0 p-5 flex flex-col items-center space-y-4">

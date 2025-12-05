@@ -98,7 +98,7 @@ export async function createTask(task: TaskDTO) {
   if (!res.ok) {
     throw new Error(`Failed to create task: ${res.status} ${res.statusText}`)
   }
-
+  
   return res.json()
 }
 

@@ -9,12 +9,13 @@ import {
   deleteUserById,
 } from "@/app/_service/adminservice";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 
 export default function Page() {
+  const checkingAuth = useRequireAuth("http://localhost:8080/admin/users");
   const [users, setUsers] = useState<CustomUser[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const [newUser, setNewUser] = useState({
     username: "",
@@ -25,13 +26,6 @@ export default function Page() {
     isEnabled: true,
     roles: [] as UserRole[],
   });
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -47,10 +41,20 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (checkingAuth === false) {
+      const fetchUsers = async () => {
+        try {
+          const data = await getAllUsers();
+          setUsers(data);
+        } catch (err: any) {
+          setError(err.message);
+        }
+      };
 
-  // Handle new user registration
+      fetchUsers();
+    }
+  }, [checkingAuth]);
+
   const handleRegister = async () => {
     setLoading(true);
     setError(null);
@@ -87,6 +91,9 @@ export default function Page() {
       setLoading(false);
     }
   };
+
+  if (checkingAuth !== false) return null;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="m-0 p-5 flex flex-col items-center space-y-4">
@@ -160,13 +167,14 @@ export default function Page() {
 
       {/* Users List */}
       {users && (
-        <div className="space-y-2 w-[400px]">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="p-3 border rounded text-[#034780] bg-[#FFF9BF] bg-opacity-80 flex justify-between items-center"
-            >
-              <div>
+        <div className="mt-5 font-serif">
+          <div className="flex flex-wrap gap-5 justify-evenly items-start w-full">
+            {users.map((user) => (
+              <div
+                key={user.id}
+                className="w-[300px] p-3 font-serif border border-gray-300 
+                     rounded-[30px] text-[#034780] bg-[#FFF9BF] bg-opacity-80"
+              >
                 <p>
                   <strong>Username:</strong> {user.username}
                 </p>
@@ -176,15 +184,18 @@ export default function Page() {
                 <p>
                   <strong>Enabled:</strong> {user.isEnabled ? "Yes" : "No"}
                 </p>
+
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="px-3 py-1 text-white rounded-[30px] bg-[#FFB2E6] hover:bg-red-500 "
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
               </div>
-              <button
-                className="px-3 py-1 bg-red-500 rounded text-white hover:bg-red-600"
-                onClick={() => handleDelete(user.id)}
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
