@@ -45,11 +45,11 @@ export default function Page() {
       setError("Network error: backend unreachable")
     }
   }
-
+  
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto p-6">
-      <h1 className="text-xl font-bold">Login</h1>
-
+      <h1 className="text-xl font-bold text-center">Login</h1>
+      
       <input
         type="text"
         placeholder="Username"
