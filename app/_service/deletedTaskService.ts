@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8090/v2/trashcan"
+const BASE_URL = "https://todo-microservice-6lak.onrender.com/v2/trashcan"
 
 export async function getAllDeletedTasks() {
   const res = await fetch(`${BASE_URL}/`, {

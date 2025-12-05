@@ -1,7 +1,7 @@
 import { Task } from "../_types/Task"
 import { TaskDTO } from "../_types/TaskDTO"
 
-const BASE_URL = "http://localhost:8090/v2/tasks"
+const BASE_URL = "https://todo-microservice-6lak.onrender.com/v2/tasks"
 
 export async function getAllUncompletedTasks() {
   const res = await fetch(`${BASE_URL}/`, {

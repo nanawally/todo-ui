@@ -1,6 +1,6 @@
 import { CustomUser } from "../_types/CustomUser";
 
-const BASE_URL = "http://localhost:8080/admin";
+const BASE_URL = "https://auth-microservice-mcep.onrender.com/admin";
 
 export async function getAllUsers() {
   const res = await fetch(`${BASE_URL}/users`, {
