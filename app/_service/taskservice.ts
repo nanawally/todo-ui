@@ -133,7 +133,7 @@ export async function moveTaskToTrash(id: string) {
     method: "PUT",
     credentials: "include",
   })
-
+  
   if (!res.ok) {
     throw new Error("Failed to move task to trash")
   }

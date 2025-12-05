@@ -10,7 +10,7 @@ export async function getAllUsers() {
   if (!res.ok) {
     throw new Error("Failed to fetch users");
   }
-
+  
   return res.json();
 }
 

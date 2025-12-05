@@ -161,10 +161,10 @@ export default function Page() {
   const handleMoveTaskToTrash = async (id: string) => {
     setLoading(true);
     setError(null);
-
+    
     try {
       await moveTaskToTrash(id);
-
+      
       setTasks((prev) => prev?.filter((t) => t.id !== id) ?? []);
     } catch (err: any) {
       setError(err.message);
