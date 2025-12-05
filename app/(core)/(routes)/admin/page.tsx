@@ -1,7 +1,7 @@
 "use client";
 
 import { CustomUser } from "@/app/_types/CustomUser";
-import { UserRole } from "@/app/_types/UserRole";
+import { UserRole, UserRoleName } from "@/app/_types/UserRole";
 import { useEffect, useState } from "react";
 import {
   getAllUsers,
@@ -128,12 +128,14 @@ export default function Page() {
           <label className="flex items-center space-x-1">
             <input
               type="checkbox"
-              checked={newUser.roles.includes("USER")}
-              onChange={(e) =>
+              checked={newUser.roles.includes(UserRoleName.USER)}
+              onChange={() =>
                 setNewUser((prev) => {
-                  const roles = prev.roles.includes("USER")
-                    ? prev.roles.filter((r) => r !== "USER")
-                    : [...prev.roles, "USER"];
+                  const role: UserRole = UserRoleName.USER;
+                  const roles = prev.roles.includes(role)
+                    ? prev.roles.filter((r) => r !== role)
+                    : [...prev.roles, role];
+
                   return { ...prev, roles };
                 })
               }
@@ -143,12 +145,14 @@ export default function Page() {
           <label className="flex items-center space-x-1">
             <input
               type="checkbox"
-              checked={newUser.roles.includes("ADMIN")}
-              onChange={(e) =>
+              checked={newUser.roles.includes(UserRoleName.ADMIN)}
+              onChange={() =>
                 setNewUser((prev) => {
-                  const roles = prev.roles.includes("ADMIN")
-                    ? prev.roles.filter((r) => r !== "ADMIN")
-                    : [...prev.roles, "ADMIN"];
+                  const role: UserRole = UserRoleName.ADMIN;
+                  const roles = prev.roles.includes(role)
+                    ? prev.roles.filter((r) => r !== role)
+                    : [...prev.roles, role];
+
                   return { ...prev, roles };
                 })
               }
