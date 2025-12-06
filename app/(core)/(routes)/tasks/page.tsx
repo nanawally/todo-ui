@@ -21,7 +21,7 @@ import {
 type TaskFetcher = () => Promise<Task[]>;
 
 export default function Page() {
-  const checkingAuth = useRequireAuth("http://localhost:8090/v2/tasks/");
+  const checkingAuth = useRequireAuth("https://todo-microservice-6lak.onrender.com/v2/tasks/");
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

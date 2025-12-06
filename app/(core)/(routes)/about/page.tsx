@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 
 export default function AboutPage() {
-  const checkingAuth = useRequireAuth("http://localhost:8080/about");
+  const checkingAuth = useRequireAuth("https://auth-microservice-mcep.onrender.com/about");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ export default function AboutPage() {
     
     const fetchAbout = async () => {
       try {
-        const res = await fetch("http://localhost:8080/about", {
+        const res = await fetch("https://auth-microservice-mcep.onrender.com/about", {
           credentials: "include",
         });
 

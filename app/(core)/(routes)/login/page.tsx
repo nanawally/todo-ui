@@ -16,7 +16,7 @@ export default function Page() {
     setSuccess(false)
 
     try {
-      const res = await fetch("http://localhost:8080/login", {
+      const res = await fetch("https://auth-microservice-mcep.onrender.com/login", {
         method: "POST",
         credentials: "include", // Include Cookies
         headers: { "Content-Type": "application/json" },

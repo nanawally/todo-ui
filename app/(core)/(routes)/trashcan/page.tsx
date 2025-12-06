@@ -14,7 +14,7 @@ import {
 type DeletedTaskFetcher = () => Promise<DeletedTask[]>;
 
 export default function Page() {
-  const checkingAuth = useRequireAuth("http://localhost:8090/v2/trashcan/");
+  const checkingAuth = useRequireAuth("https://todo-microservice-6lak.onrender.com/v2/trashcan/");
   const [tasks, setTasks] = useState<DeletedTask[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

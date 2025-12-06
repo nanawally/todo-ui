@@ -7,7 +7,7 @@ import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function Page() {
-  const checkingAuth = useRequireAuth("http://localhost:8080/auth/check");
+  const checkingAuth = useRequireAuth("https://auth-microservice-mcep.onrender.com/auth/check");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function Page() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:8080/auth/logout", {
+      const res = await fetch("https://auth-microservice-mcep.onrender.com/auth/logout", {
         method: "POST",
         credentials: "include",
       });

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useRequireAuth } from "@/app/_hooks/useRequireAuth";
 
 export default function Page() {
-  const checkingAuth = useRequireAuth("http://localhost:8080/admin/users");
+  const checkingAuth = useRequireAuth("https://auth-microservice-mcep.onrender.com/admin/users");
   const [users, setUsers] = useState<CustomUser[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
