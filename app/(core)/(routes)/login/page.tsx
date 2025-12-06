@@ -14,7 +14,7 @@ export default function Page() {
   const login = async () => {
     setError(null)
     setSuccess(false)
-
+    
     try {
       const res = await fetch("https://auth-microservice-mcep.onrender.com/login", {
         method: "POST",
@@ -35,9 +35,9 @@ export default function Page() {
       }
 
       const data = await res.json()
-      const token = data.token
-      localStorage.setItem("authToken", token)
-      console.log(token)
+      //const token = data.token
+      //localStorage.setItem("authToken", token)
+      //console.log(token)
 
       setSuccess(true)
       router.push("/tasks");
